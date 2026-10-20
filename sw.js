@@ -1,6 +1,6 @@
 /* Only public application files are cached. Cloud requests never enter Cache API. */
-const CACHE='fahrzeugwerkstatt-mobile-2.0.0-rc1';
-const FILES=['./','./index.html','./assets/style.css','./assets/cloud.css','./assets/app.js','./assets/mobile-v2.js','./assets/fw-model.js','./assets/fw-cloud.js','./assets/fw-sync-ui.js','./assets/jszip.min.js','./manifest.webmanifest','./icon-192.png','./icon-512.png'];
+const CACHE='fahrzeugwerkstatt-mobile-2.0.1';
+const FILES=['./','./index.html','./assets/style.css','./assets/cloud.css','./assets/app.js','./assets/mobile-v2.js','./assets/vehicle-cover.js','./assets/vehicle-cover.css','./assets/fw-model.js','./assets/fw-cloud.js','./assets/fw-sync-ui.js','./assets/jszip.min.js','./manifest.webmanifest','./icon-192.png','./icon-512.png'];
 self.addEventListener('install',event=>event.waitUntil(caches.open(CACHE).then(c=>c.addAll(FILES)).then(()=>self.skipWaiting())));
 self.addEventListener('activate',event=>event.waitUntil((async()=>{for(const k of await caches.keys())if(k.startsWith('fahrzeugwerkstatt-mobile-')&&k!==CACHE)await caches.delete(k);await self.clients.claim()})()));
 self.addEventListener('fetch',event=>{if(event.request.method!=='GET')return;const u=new URL(event.request.url);if(u.origin!==location.origin)return;const paths=FILES.map(p=>new URL(p,self.registration.scope).pathname);if(!paths.includes(u.pathname))return;event.respondWith((async()=>{const c=await caches.open(CACHE),found=await c.match(event.request,{ignoreSearch:true});return found||fetch(event.request)})())});
