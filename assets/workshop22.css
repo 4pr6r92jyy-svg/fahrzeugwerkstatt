@@ -1,0 +1,34 @@
+/* 2.2 visual layer; no fixed crop or object-fit:cover on original brand images. */
+.brand22{display:block;text-decoration:none;margin:0 5px 22px;padding:0;flex:none}
+.brand22 img{display:block;width:100%;height:auto;max-height:none;object-fit:contain}
+.hero22{margin:0 0 24px;width:100%;border-radius:14px;overflow:hidden;border:1px solid #343d31;background:#111610}
+.hero22 img{display:block;width:100%;height:auto;max-height:none;object-fit:contain}
+.hero22 + .pagehead .eyebrow{display:none}
+.sidebar{overflow-y:auto!important;overflow-x:hidden!important;scrollbar-gutter:stable;overscroll-behavior:contain}
+.sidebar .navlist{flex:0 0 auto!important;min-height:auto!important;max-height:none!important;overflow:visible!important;display:block}
+.sidebar .ideas-bottom{position:static!important;flex:none;margin-top:12px}
+.sidebar .sidebarfoot{position:static!important;margin-top:18px;flex:none}
+.sidebar .navbtn{white-space:normal}
+.sticker22{display:inline-block;width:30px;height:30px;vertical-align:middle;flex:none;filter:drop-shadow(0 2px 1px #0006)}
+.navicon .sticker22{width:28px;height:28px}.symbol .sticker22{width:42px;height:42px}.navicon{width:30px;min-width:30px}
+.fw22-profile{padding:22px;min-width:0}.fw22-profile h2{margin:7px 0 10px}.fw22-profile header{border-bottom:1px solid #35412f;padding-bottom:14px}
+.fw22-scope{font-size:13px;color:#aeb9a6;margin-top:10px}.fw22-scope summary{cursor:pointer;padding:5px 0;color:#b6c49e}
+.fw22-scope[open]{background:#151d15;border-radius:8px;padding:10px 12px}.fw22-scope ul{padding-left:20px}
+.fw22-item{padding:18px 0;border-bottom:1px solid #303b2e}.fw22-item:last-child{border-bottom:0;padding-bottom:0}
+.fw22-item-head{display:flex;gap:14px;justify-content:space-between;align-items:start;flex-wrap:wrap}.fw22-amount{color:#dba574}
+.fw22-cadence{margin:6px 0!important}.fw22-condition{font-size:13px;color:#adb9a4;line-height:1.55}
+.fw22-item-actions{display:flex;justify-content:space-between;align-items:start;gap:10px;flex-wrap:wrap;font-size:12px;margin-top:10px}
+.fw22-item-actions details{max-width:100%;overflow-wrap:anywhere;flex:1;min-width:120px}.fw22-item-actions summary{cursor:pointer;color:#aebf8e}
+.fw22-item-actions button{font-size:12px}.interval22-editor{padding:18px;border:1px solid #4b593e;background:#182016;border-radius:12px;grid-column:1/-1}
+.interval22-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin:12px 0 16px}.interval22-grid label{display:block}
+.interval22-grid label.wide{grid-column:1/-1}.interval22-grid input,.interval22-grid select,.interval22-grid textarea{display:block;width:100%;margin-top:6px;box-sizing:border-box}
+.interval22-summary{display:flex;flex-wrap:wrap;align-items:center;gap:7px;margin:8px 0;padding:10px 12px;border-left:3px solid #b06530;background:#1b241a;border-radius:6px}
+.interval22-summary small{display:block;flex-basis:100%;color:#aeb9a6}.interval22-summary .slim{font-size:12px}
+.own22-panel{margin:20px 0}.own22-row{padding:12px 0;border-bottom:1px solid #35412f}.own22-row:last-child{border-bottom:0}
+.tire22-row{display:grid;grid-template-columns:1fr 1.4fr;gap:12px;padding:10px 0;border-bottom:1px solid #35412f}.tire22-row small{display:block;color:#b7c1ae}
+.brand22-mobile{width:min(100%,320px);margin:16px auto 24px}.brand22-mobile img{width:100%;height:auto;display:block}
+.bottom .sticker22{width:24px;height:24px}.bottom i{line-height:1;display:block}.mobile-hero22 + .hero{padding-top:3px}
+@media(max-width:800px){.sidebar .navlist{display:flex;flex-wrap:wrap}.sidebar{max-height:none;height:auto}.brand22{max-width:260px;margin:5px auto 12px}.hero22{margin-bottom:16px}.interval22-grid{grid-template-columns:1fr}.interval22-editor{padding:13px}.fw22-profile{padding:16px}.fw22-item-actions button{min-height:40px}.tire22-row{grid-template-columns:1fr}.fw22-item-head{display:block}.fw22-amount{display:block;margin-top:7px}}
+@media print{.hero22,.brand22,.sticker22{display:none!important}}
+
+button[data-fw21-nav] .sticker22{width:26px;height:26px;vertical-align:middle;margin-right:5px}
