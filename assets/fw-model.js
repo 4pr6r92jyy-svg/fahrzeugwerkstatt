@@ -466,6 +466,38 @@ const SCHEMA = {
       "notnull": 1,
       "dflt_value": "0",
       "pk": 0
+    },
+    "hsn": {
+      "cid": 21,
+      "name": "hsn",
+      "type": "TEXT",
+      "notnull": 1,
+      "dflt_value": "''",
+      "pk": 0
+    },
+    "tsn": {
+      "cid": 22,
+      "name": "tsn",
+      "type": "TEXT",
+      "notnull": 1,
+      "dflt_value": "''",
+      "pk": 0
+    },
+    "summer_tires": {
+      "cid": 23,
+      "name": "summer_tires",
+      "type": "TEXT",
+      "notnull": 1,
+      "dflt_value": "''",
+      "pk": 0
+    },
+    "winter_tires": {
+      "cid": 24,
+      "name": "winter_tires",
+      "type": "TEXT",
+      "notnull": 1,
+      "dflt_value": "''",
+      "pk": 0
     }
   },
   "cases": {
@@ -1305,9 +1337,133 @@ const SCHEMA = {
       "dflt_value": null,
       "pk": 0
     }
+  },
+  "equipment": {
+    "id": {
+      "cid": 0,
+      "name": "id",
+      "type": "INTEGER",
+      "notnull": 0,
+      "dflt_value": null,
+      "pk": 1
+    },
+    "name": {
+      "cid": 1,
+      "name": "name",
+      "type": "TEXT",
+      "notnull": 1,
+      "dflt_value": null,
+      "pk": 0
+    },
+    "category": {
+      "cid": 2,
+      "name": "category",
+      "type": "TEXT",
+      "notnull": 1,
+      "dflt_value": "'Werkzeug'",
+      "pk": 0
+    },
+    "purchased_at": {
+      "cid": 3,
+      "name": "purchased_at",
+      "type": "TEXT",
+      "notnull": 1,
+      "dflt_value": "''",
+      "pk": 0
+    },
+    "amount_cents": {
+      "cid": 4,
+      "name": "amount_cents",
+      "type": "INTEGER",
+      "notnull": 1,
+      "dflt_value": "0",
+      "pk": 0
+    },
+    "vendor": {
+      "cid": 5,
+      "name": "vendor",
+      "type": "TEXT",
+      "notnull": 1,
+      "dflt_value": "''",
+      "pk": 0
+    },
+    "notes": {
+      "cid": 6,
+      "name": "notes",
+      "type": "TEXT",
+      "notnull": 1,
+      "dflt_value": "''",
+      "pk": 0
+    },
+    "created_at": {
+      "cid": 7,
+      "name": "created_at",
+      "type": "TEXT",
+      "notnull": 1,
+      "dflt_value": null,
+      "pk": 0
+    },
+    "updated_at": {
+      "cid": 8,
+      "name": "updated_at",
+      "type": "TEXT",
+      "notnull": 1,
+      "dflt_value": null,
+      "pk": 0
+    }
+  },
+  "ideas": {
+    "id": {
+      "cid": 0,
+      "name": "id",
+      "type": "INTEGER",
+      "notnull": 0,
+      "dflt_value": null,
+      "pk": 1
+    },
+    "title": {
+      "cid": 1,
+      "name": "title",
+      "type": "TEXT",
+      "notnull": 1,
+      "dflt_value": null,
+      "pk": 0
+    },
+    "description": {
+      "cid": 2,
+      "name": "description",
+      "type": "TEXT",
+      "notnull": 1,
+      "dflt_value": "''",
+      "pk": 0
+    },
+    "status": {
+      "cid": 3,
+      "name": "status",
+      "type": "TEXT",
+      "notnull": 1,
+      "dflt_value": "'Neu'",
+      "pk": 0
+    },
+    "created_at": {
+      "cid": 4,
+      "name": "created_at",
+      "type": "TEXT",
+      "notnull": 1,
+      "dflt_value": null,
+      "pk": 0
+    },
+    "updated_at": {
+      "cid": 5,
+      "name": "updated_at",
+      "type": "TEXT",
+      "notnull": 1,
+      "dflt_value": null,
+      "pk": 0
+    }
   }
 };
-const ORDER=['brands','software','adapters','software_brands','vehicles','cases','tests','maintenance','expenses','attachments','case_steps','knowledge_entries'];
+const ORDER=['brands','software','adapters','software_brands','vehicles','cases','tests','maintenance','expenses','attachments','case_steps','knowledge_entries','equipment','ideas'];
 const FK={software_brands:{software_id:'software',brand_id:'brands'},vehicles:{brand_id:'brands'},cases:{vehicle_id:'vehicles',software_id:'software',adapter_id:'adapters'},tests:{vehicle_id:'vehicles',software_id:'software',adapter_id:'adapters'},maintenance:{vehicle_id:'vehicles'},expenses:{vehicle_id:'vehicles',case_id:'cases'},attachments:{vehicle_id:'vehicles',case_id:'cases'},case_steps:{case_id:'cases'},knowledge_entries:{brand_id:'brands',vehicle_id:'vehicles',source_case_id:'cases'}};
 const UUID=/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const clone=x=>x===undefined?undefined:JSON.parse(JSON.stringify(x));
@@ -1325,23 +1481,42 @@ function fromPortable(snap,datasetId){const doc=empty(datasetId||snap?.dataset_i
 function toPortable(doc){const snap={format:'MeineFahrzeugwerkstattPortable',format_version:1,dataset_id:doc.dataset_id,generated_at:new Date().toISOString(),entities:Object.fromEntries(ORDER.map(t=>[t,[]])),deleted:[]};for(const r of Object.values(doc.records)){if(r.deleted){snap.deleted.push({entity:r.entity,portable_id:r.uid});continue}const data=clone(r.data);data.id=r.uid;snap.entities[r.entity].push({portable_id:r.uid,revision:1,data});}return snap}
 function defaults(entity,values={}){const data={};for(const [field,s] of Object.entries(SCHEMA[entity]||{})){if(field==='id'||field==='search_text')continue;const d=s.dflt_value;if(d!==null)data[field]=s.type==='INTEGER'?Number(d):String(d).replace(/^'|'$/g,'');else data[field]=s.notnull?(s.type==='INTEGER'?0:''):null;}Object.assign(data,values);const now=new Date().toISOString();if('created_at'in data&&!data.created_at)data.created_at=now;if('updated_at'in data)data.updated_at=now;return data}
 function validate(doc){if(!doc||doc.format!=='FWCloud'||doc.version!==1||!doc.records||Array.isArray(doc.records))throw Error('Unbekanntes Synchronisationsformat.');if(doc.dataset_id!==null&&!UUID.test(doc.dataset_id))throw Error('Ungültige Datenbestandskennung.');const entries=Object.entries(doc.records);if(entries.length>25000)throw Error('Mehr als 25.000 Datensätze: Abgleich angehalten.');const uniques={brands:new Set(),software:new Set(),attachments:new Set(),knowledge_entries:new Set(),software_brands:new Set()};for(const [k,r]of entries){if(!r||!ORDER.includes(r.entity)||!UUID.test(r.uid)||k!==key(r.entity,r.uid)||typeof r.deleted!=='boolean')throw Error('Ungültige Datensatzkennung.');if(r.deleted){if(r.data!==null)throw Error('Löschvermerk enthält unerwartete Daten.');continue}if(!r.data||Array.isArray(r.data))throw Error('Datensatz ohne Inhalt.');const d=r.data,fields=SCHEMA[r.entity];for(const f of Object.keys(d)){if(f==='_software_key'&&r.entity==='software')continue;if(!fields[f]||f==='id'||f==='search_text')throw Error('Unzulässiges Feld '+r.entity+'.'+f);}
- for(const [f,s]of Object.entries(fields)){if(f==='id'||f==='search_text')continue;const v=d[f];if(v===undefined)throw Error('Unvollständiger Datensatz: '+r.entity+'.'+f);if(s.notnull&&(v===null||(typeof v==='string'&&({brands:['name'],software:['name'],adapters:['name'],vehicles:['model'],cases:['date','description'],tests:['tested_at'],maintenance:['title'],expenses:['date','description'],case_steps:['title'],knowledge_entries:['title']}[r.entity]||[]).includes(f)&&v.trim()==='')))throw Error('Pflichtfeld fehlt: '+r.entity+'.'+f);if(v===null)continue;if(FK[r.entity]?.[f]){const target=doc.records[key(FK[r.entity][f],v)];if(!UUID.test(v)||!target||target.deleted)throw Error('Verknüpfung fehlt: '+r.entity+'.'+f+'. Möglicher Löschkonflikt; kein Abgleich durchgeführt.');}else if(s.type==='INTEGER'){if(!Number.isSafeInteger(v))throw Error('Ungültige Zahl: '+f);}else if(typeof v!=='string'||v.length>300000||v.includes('\u0000'))throw Error('Ungültiger Text: '+f);}
+ for(const [f,s]of Object.entries(fields)){if(f==='id'||f==='search_text')continue;const v=d[f];if(v===undefined){if(r.entity==='vehicles'&&['hsn','tsn','summer_tires','winter_tires'].includes(f))continue;throw Error('Unvollständiger Datensatz: '+r.entity+'.'+f);}if(s.notnull&&(v===null||(typeof v==='string'&&({brands:['name'],software:['name'],adapters:['name'],vehicles:['model'],cases:['date','description'],tests:['tested_at'],maintenance:['title'],expenses:['date','description'],equipment:['name'],ideas:['title'],case_steps:['title'],knowledge_entries:['title']}[r.entity]||[]).includes(f)&&v.trim()==='')))throw Error('Pflichtfeld fehlt: '+r.entity+'.'+f);if(v===null)continue;if(FK[r.entity]?.[f]){const target=doc.records[key(FK[r.entity][f],v)];if(!UUID.test(v)||!target||target.deleted)throw Error('Verknüpfung fehlt: '+r.entity+'.'+f+'. Möglicher Löschkonflikt; kein Abgleich durchgeführt.');}else if(s.type==='INTEGER'){if(!Number.isSafeInteger(v))throw Error('Ungültige Zahl: '+f);}else if(typeof v!=='string'||v.length>300000||v.includes('\u0000'))throw Error('Ungültiger Text: '+f);}
+ for(const f of ['favorite','position','remind_months','warn_km','mileage','build_year','model_year','due_mileage','done_mileage','amount_cents']){
+  if(d[f]!==undefined&&d[f]!==null&&(!Number.isSafeInteger(d[f])||d[f]<0||d[f]>2000000000))throw Error('Ungültiger Zahlenbereich: '+f);
+ }
+ for(const f of ['build_year','model_year'])if(d[f]!==undefined&&d[f]!==null&&(d[f]<1886||d[f]>2200))throw Error('Baujahr/Modelljahr muss zwischen 1886 und 2200 liegen.');
+ for(const f of ['date','mileage_date','first_registration','tested_at','due_date','done_date','purchased_at']){
+  if(d[f]){const parsed=new Date(d[f]+'T00:00:00Z');if(!/^\d{4}-\d{2}-\d{2}$/.test(d[f])||Number.isNaN(+parsed)||parsed.toISOString().slice(0,10)!==d[f])throw Error('Ungültiges Kalenderdatum: '+f);}
+ }
  if(['expenses','attachments'].includes(r.entity)&&d.case_id){const c=doc.records[key('cases',d.case_id)];if(c.data.vehicle_id!==d.vehicle_id)throw Error('Der Diagnosefall gehört zu einem anderen Fahrzeug.');}
  if(r.entity==='vehicles'){if(d.mileage!==null&&d.mileage<0)throw Error('Negativer Kilometerstand.');if(![0,1].includes(d.favorite))throw Error('Favorit ungültig.');}
  if(r.entity==='maintenance'){if(!['Geplant','Erledigt','Entfällt'].includes(d.status))throw Error('Wartungsstatus ungültig.');if(d.due_month&&(!/^\d{4}-(0[1-9]|1[0-2])$/.test(d.due_month)||d.due_date))throw Error('Fälligkeit: Monat oder genaues Datum, nicht beides.');if(d.status==='Erledigt'&&!d.done_date)throw Error('Erledigungsdatum fehlt.');if(d.remind_months<0||d.remind_months>12||d.warn_km<0||d.warn_km>100000)throw Error('Ungültige Wartungsvorwarnung.');}
  if(r.entity==='cases'&&!['Offen','In Prüfung','Wartet auf Teile','Gelöst','Nicht reproduzierbar'].includes(d.status))throw Error('Fallstatus ungültig.');
  if(r.entity==='case_steps'&&(!['Offen','Erledigt','Nicht möglich','Übersprungen'].includes(d.status)||d.position===null||d.position<0||d.position>100000))throw Error('Prüfschritt ungültig.');
- if(r.entity==='expenses'&&(d.amount_cents<0||d.amount_cents>1000000000))throw Error('Ungültiger Kostenbetrag.');
+ if(['expenses','equipment'].includes(r.entity)&&(d.amount_cents<0||d.amount_cents>1000000000))throw Error('Ungültiger Kostenbetrag.');
  if(r.entity==='attachments'){if(!/^[a-f0-9]{32}\.(pdf|png|jpe?g|webp|txt|csv)$/.test(d.stored_name)||!Number.isInteger(d.size_bytes)||d.size_bytes<1||d.size_bytes>20971520||!/^[a-f0-9]{64}$/.test(d.sha256))throw Error('Ungültiger Dateianhang.');}
+ if(r.entity==='vehicles'){
+  if(d.hsn&&!/^[0-9]{4}$/.test(d.hsn))throw Error('HSN muss aus vier Ziffern bestehen.');
+  if(d.tsn&&!/^[A-Za-z0-9]{3,13}$/.test(d.tsn))throw Error('TSN muss 3 bis 13 Buchstaben/Ziffern enthalten.');
+  if((d.summer_tires||'').length>250||(d.winter_tires||'').length>250)throw Error('Reifengröße ist zu lang.');
+ }
+ if(r.entity==='equipment'){
+  if(d.purchased_at){const date=new Date(d.purchased_at+'T00:00:00Z');if(!/^\d{4}-\d{2}-\d{2}$/.test(d.purchased_at)||Number.isNaN(+date)||date.toISOString().slice(0,10)!==d.purchased_at)throw Error('Ungültiges Kaufdatum.');}
+  if(['name','category','vendor'].some(f=>d[f].length>250)||d.notes.length>20000)throw Error('Ausrüstungstext ist zu lang.');
+ }
+ if(r.entity==='ideas'&&(d.title.length>250||d.description.length>20000))throw Error('Ideentext ist zu lang.');
+ if(r.entity==='ideas'&&!['Neu','Geplant','In Arbeit','Umgesetzt'].includes(d.status))throw Error('Ungültiger Ideenstatus.');
  if(r.entity==='knowledge_entries'&&!['Fehlersuche','Wartung'].includes(d.category))throw Error('Wissensbereich ungültig.');
  let u=null;if(r.entity==='brands')u=d.name;if(r.entity==='software'){u=d._software_key;if(typeof u!=='string'||!/^[A-Za-z0-9_-]{1,100}$/.test(u))throw Error('Softwarekennung ungültig.');}if(r.entity==='attachments')u=d.stored_name;if(r.entity==='knowledge_entries')u=d.seed_key;if(r.entity==='software_brands')u=d.software_id+'|'+d.brand_id;if(u){if(uniques[r.entity].has(u))throw Error('Doppelte eindeutige Zuordnung: '+r.entity+'. Nicht blind zusammenführen.');uniques[r.entity].add(u);}}
  return true;}
 // Three-way merge, with explicit record-level conflicts. No last-writer-wins.
+function upgrade(doc){const out=clone(doc);for(const r of Object.values(out?.records||{})){if(r?.entity==='vehicles'&&!r.deleted&&r.data&&typeof r.data==='object'&&!Array.isArray(r.data)){for(const k of ['hsn','tsn','summer_tires','winter_tires'])if(r.data[k]===undefined)r.data[k]='';}}return out;}
 function merge(base,local,remote,choices={}){const result=empty(remote.dataset_id||local.dataset_id||base?.dataset_id||null),conflicts=[];const b=base?.records||{},l=local.records||{},r=remote.records||{};for(const k of new Set([...Object.keys(b),...Object.keys(l),...Object.keys(r)])){let B=b[k]||null,L=l[k]||null,R=r[k]||null,out;const mark=stable([L,R]);if(equal(L,R))out=L;else if(equal(L,B))out=R;else if(equal(R,B))out=L;else if(choices[k]?.mark===mark)out=choices[k].side==='local'?L:R;else{conflicts.push({key:k,base:B,local:L,remote:R,mark});out=L;}if(out)result.records[k]=clone(out);}
  return {doc:result,conflicts};}
 function changedCount(base,doc){return [...new Set([...Object.keys(base?.records||{}),...Object.keys(doc.records)])].filter(k=>!equal(base?.records?.[k],doc.records[k])).length}
 function displayRecord(r,doc){if(!r)return '(Nicht vorhanden)';const d=r.data||{};let label=d.model||d.title||d.description||d.name||d.filename||d.date||r.entity;if(r.entity==='vehicles'){const b=doc?.records?.[key('brands',d.brand_id)];label=(b?.data?.name||'')+' '+(d.model||'');}return label+(r.deleted?' (gelöscht)':'');}
 function maintenanceState(m,v,date=new Date()){if(['Erledigt','Entfällt'].includes(m.status))return {text:m.status,level:'done'};const now=new Date(date.getFullYear(),date.getMonth(),date.getDate()),monthIndex=now.getFullYear()*12+now.getMonth();let level='plan',label='Geplant';const rank={plan:0,soon:1,due:2,late:3};function take(l,t){if(rank[l]>rank[level]){level=l;label=t;}}
  if(m.due_month){const [y,mo]=m.due_month.split('-').map(Number),idx=y*12+mo-1;if(monthIndex>idx)take('late','Überfällig');else if(monthIndex===idx)take('due','Diesen Monat fällig');else if(monthIndex>=idx-Number(m.remind_months??1))take('soon','Bald fällig');}else if(m.due_date){const due=new Date(m.due_date+'T00:00:00'),start=new Date(due);start.setDate(1);start.setMonth(start.getMonth()-Number(m.remind_months??1));const max=new Date(start.getFullYear(),start.getMonth()+1,0).getDate();start.setDate(Math.min(due.getDate(),max));if(now>due)take('late','Überfällig');else if(+now===+due)take('due','Heute fällig');else if(now>=start)take('soon','Bald fällig');}if(m.due_mileage!==null&&m.due_mileage!==undefined&&v?.mileage!==null&&v?.mileage!==undefined){if(v.mileage>m.due_mileage)take('late','Kilometergrenze überschritten');else if(v.mileage===m.due_mileage)take('due','Kilometergrenze erreicht');else if(v.mileage>=m.due_mileage-Number(m.warn_km??1000))take('soon','Kilometergrenze naht');}return {text:label,level};}
-const api={SCHEMA,ORDER,FK,UUID,clone,stable,equal,hash,signature,key,empty,fromPortable,toPortable,defaults,validate,merge,changedCount,displayRecord,maintenanceState};root.FWModel=api;if(typeof module!=='undefined'&&module.exports)module.exports=api;
+const api={SCHEMA,ORDER,FK,UUID,clone,stable,equal,hash,signature,key,empty,fromPortable,toPortable,defaults,validate,upgrade,merge,changedCount,displayRecord,maintenanceState};root.FWModel=api;if(typeof module!=='undefined'&&module.exports)module.exports=api;
 })(typeof globalThis!=='undefined'?globalThis:this);

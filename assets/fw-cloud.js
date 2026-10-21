@@ -1,4 +1,4 @@
-/* Fahrzeugwerkstatt 2.0 RC1 – explicit opt-in cloud, offline local-first.
+/* Fahrzeugwerkstatt 2.1 – explicit opt-in cloud, offline local-first.
    Transport: Supabase Auth + transactional Postgres RPC + private Storage.
    Session credentials are NEVER included in a vehicle export or backup. */
 (function(root){'use strict';const M=root.FWModel||(typeof require!=='undefined'?require('./fw-model.js'):null);
@@ -20,7 +20,7 @@ class SupabaseTransport{
 class Engine{
  constructor(adapter,options={}){this.adapter=adapter;this.transport=options.transport||null;this.notify=options.notify||(()=>{});this.isEditing=options.isEditing||(()=>false);this.primary=!!options.primary;this.busy=false;this.conflicts=[];this.lastDoc=null;this.lastStatus={text:'Cloud nicht eingerichtet',kind:'off',pending:0};this.config=null;this.lastError='';this.timer=null;this.choices={};}
  status(text,kind='info',pending=0){this.lastStatus={text,kind,pending};this.notify(this.lastStatus)}
- async connect(config,session){this.config=config;if(!this.transport)this.transport=new SupabaseTransport(config,session,s=>{this.adapter.saveSession(s);});if(!this.transport.session&&!this.transport.testMode){this.status('Bitte anmelden','off');return;}this.start();}
+ async connect(config,session){this.config=config;if(!this.transport)this.transport=new SupabaseTransport(config,session,s=>this.adapter.saveSession(s));if(!this.transport.session&&!this.transport.testMode){this.status('Bitte anmelden','off');return;}this.start();}
  start(){clearInterval(this.timer);this.timer=setInterval(()=>this.sync().catch(()=>{}),60000);this.schedule(400);}
  stop(){clearInterval(this.timer);clearTimeout(this.debounce);this.timer=null;this.config=null;this.status('Automatischer Abgleich pausiert','off');}
  schedule(ms=2000){clearTimeout(this.debounce);this.debounce=setTimeout(()=>this.sync().catch(()=>{}),ms);}
@@ -30,35 +30,35 @@ class Engine{
   if(typeof navigator!=='undefined'&&navigator.locks){await navigator.locks.request('fw-cloud-v2',{ifAvailable:true},lock=>lock?work():Promise.resolve());}else{ // fallback lease for browsers without Web Locks; data CAS remains the final guard.
    const key='fw-cloud-lease',token=crypto.randomUUID();let old;try{old=JSON.parse(localStorage.getItem(key)||'null');if(old&&old.until>Date.now())return;localStorage.setItem(key,JSON.stringify({token,until:Date.now()+120000}));}catch{}const beat=setInterval(()=>{try{localStorage.setItem(key,JSON.stringify({token,until:Date.now()+120000}))}catch{}},20000);try{await work()}finally{clearInterval(beat);try{if(JSON.parse(localStorage.getItem(key)||'{}').token===token)localStorage.removeItem(key)}catch{}}}
  }
- async run(force=false){this.status('Abgleich wird geprüft …','busy');const ctx=await this.adapter.read();M.validate(ctx.doc);const binding=this.config.url+'|'+(this.transport.session?.user?.id||'test');if(ctx.state.binding&&ctx.state.binding!==binding)throw Error('Dieser Datenbestand ist an ein anderes Cloud-Konto gebunden. Nicht zusammenführen.');
+ async run(force=false){const runConfig=this.config,transport=this.transport;const active=()=>this.config===runConfig&&this.transport===transport&&!!runConfig?.enabled;if(!active())return;this.status('Abgleich wird geprüft …','busy');const ctx=await this.adapter.read();if(!active())return;M.validate(ctx.doc);const binding=runConfig.url+'|'+(this.transport.session?.user?.id||'test');if(ctx.state.binding&&ctx.state.binding!==binding)throw Error('Dieser Datenbestand ist an ein anderes Cloud-Konto gebunden. Nicht zusammenführen.');
   if(ctx.state.paused)throw Error('Abgleich nach Wiederherstellung pausiert. Erst Sicherung und Datenstände prüfen.');
   let head=await this.transport.head(),remote=null,revision=head.revision;
   if(revision===0){if(!this.primary||!this.config.allowCreate)throw Error('Die Cloud ist noch leer. Zuerst am Surface anmelden und den Erstabgleich bestätigen.');remote=M.empty(ctx.doc.dataset_id);}
-  else if(ctx.state.revision===revision&&ctx.state.base)remote=M.clone(ctx.state.base);
+  else if(ctx.state.client_schema===21&&ctx.state.revision===revision&&ctx.state.base)remote=M.clone(ctx.state.base);
   else {const fetched=await this.transport.read();revision=fetched.revision;remote=fetched.document;}
-  if(!remote)throw Error('Cloud-Datenbestand fehlt.');M.validate(remote);
-  if(ctx.state.binding===binding&&ctx.state.revision===revision&&ctx.state.base&&M.equal(ctx.doc,ctx.state.base)&&!force){this.status('Alles synchronisiert · '+new Date().toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'}),'ok');return;}
-  const local=M.clone(ctx.doc);if(local.dataset_id&&remote.dataset_id&&local.dataset_id!==remote.dataset_id)throw Error('Diese Daten gehören zu einem anderen Fahrzeugbestand. Kein automatisches Überschreiben.');
+  if(!active())return;if(!remote)throw Error('Cloud-Datenbestand fehlt.');M.validate(remote);const remoteWire=M.clone(remote);remote=M.upgrade(remote);
+  if(ctx.state.client_schema===21&&ctx.state.binding===binding&&ctx.state.revision===revision&&ctx.state.base&&M.equal(ctx.doc,ctx.state.base)&&M.equal(ctx.doc,M.upgrade(ctx.doc))&&!force){this.status('Alles synchronisiert · '+new Date().toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'}),'ok');return;}
+  const local=M.upgrade(ctx.doc);if(local.dataset_id&&remote.dataset_id&&local.dataset_id!==remote.dataset_id)throw Error('Diese Daten gehören zu einem anderen Fahrzeugbestand. Kein automatisches Überschreiben.');
   local.dataset_id=remote.dataset_id||local.dataset_id;
   if(!local.dataset_id)throw Error('Datenbestandskennung fehlt.');
-  let base=M.clone(ctx.state.base||ctx.state.initial_base||M.empty(local.dataset_id));base.dataset_id=local.dataset_id;
+  let base=M.upgrade(ctx.state.base||ctx.state.initial_base||M.empty(local.dataset_id));base.dataset_id=local.dataset_id;
   if(!ctx.state.binding&&revision>0&&Object.keys(local.records).length){const overlap=Object.keys(local.records).some(k=>remote.records[k]);if(!overlap)throw Error('Keine gemeinsamen Kennungen gefunden. Bitte zuerst einen mobilen Export derselben Windows-Datenbank übernehmen.');}
   const choices={...(ctx.state.choices||{}),...this.choices};const plan=M.merge(base,local,remote,choices);this.lastDoc=local;
   if(plan.conflicts.length){this.conflicts=plan.conflicts;await this.adapter.saveState({...ctx.state,conflicts:plan.conflicts,choices});this.status(plan.conflicts.length+' Konflikt(e) prüfen · nichts überschrieben','conflict',plan.conflicts.length);return;}
   M.validate(plan.doc);this.conflicts=[];
   const pending=M.changedCount(base,local);this.status('Dateien und Änderungen abgleichen …','busy',pending);
   // Files must exist before their metadata is made visible on another device.
-  for(const [k,r]of Object.entries(plan.doc.records)){if(r.entity!=='attachments'||r.deleted)continue;const data=r.data,known=remote.records[k];let blob=await this.adapter.getBlob(data);
-   if(!blob){blob=await this.transport.download(data);await this.adapter.putBlob(data,blob);}
-   if(!known||known.deleted||known.data.sha256!==data.sha256)await this.transport.upload(data,blob);
+  for(const [k,r]of Object.entries(plan.doc.records)){if(!active())return;if(r.entity!=='attachments'||r.deleted)continue;const data=r.data,known=remote.records[k];let blob=await this.adapter.getBlob(data);
+   if(!active())return;if(!blob){blob=await this.transport.download(data);if(!active())return;await this.adapter.putBlob(data,blob);}
+   if(!active())return;if(!known||known.deleted||known.data.sha256!==data.sha256)await this.transport.upload(data,blob);
   }
-  if(this.isEditing()){this.status('Eingabe aktiv · Abgleich nach dem Speichern','waiting');this.schedule(2000);return;}
-  if(!M.equal(plan.doc,remote)){const written=await this.transport.save(revision,plan.doc);if(!written.ok){this.status('Anderes Gerät hat gespeichert · erneuter Vergleich','waiting');this.schedule(1000);return;}revision=written.revision;remote=M.clone(plan.doc);}
-  const nextState={base:remote,revision,binding,last_sync:new Date().toISOString(),choices:{},conflicts:[],paused:false};
+  if(!active())return;if(this.isEditing()){this.status('Eingabe aktiv · Abgleich nach dem Speichern','waiting');this.schedule(2000);return;}
+  if(!M.equal(plan.doc,remoteWire)){const written=await this.transport.save(revision,plan.doc);if(!written.ok){this.status('Anderes Gerät hat gespeichert · erneuter Vergleich','waiting');this.schedule(1000);return;}revision=written.revision;remote=M.clone(plan.doc);}
+  const nextState={base:remote,revision,binding,client_schema:21,last_sync:new Date().toISOString(),choices:{},conflicts:[],paused:false};
   // The adapter checks ctx.hash in one transaction. Never clobber local edits made
   // while network requests were in flight. The next run re-evaluates against base.
-  if(this.isEditing()){this.status('Eingabe aktiv · Datenstand später übernehmen','waiting');this.schedule(2000);return;}
-  await this.adapter.apply(ctx.hash,plan.doc,nextState);this.choices={};this.lastError='';
+  if(!active())return;if(this.isEditing()){this.status('Eingabe aktiv · Datenstand später übernehmen','waiting');this.schedule(2000);return;}
+  await this.adapter.apply(ctx.hash,plan.doc,nextState);this.choices={};this.lastError='';if(!active())return;
   this.status('Alles synchronisiert · '+new Date().toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'}),'ok');
  }
  async choose(key,side){const c=this.conflicts.find(x=>x.key===key);if(!c||!['local','remote'].includes(side))throw Error('Konflikt nicht mehr aktuell.');const ctx=await this.adapter.read();const choice={side,mark:c.mark};this.choices[key]=choice;await this.adapter.saveState({...ctx.state,choices:{...(ctx.state.choices||{}),[key]:choice}});this.conflicts=this.conflicts.filter(x=>x.key!==key);this.status(this.conflicts.length?'Weitere Konflikte auswählen':'Auswahl gespeichert · Abgleich wird erneut geprüft',this.conflicts.length?'conflict':'waiting');if(!this.conflicts.length)this.schedule(300);}
