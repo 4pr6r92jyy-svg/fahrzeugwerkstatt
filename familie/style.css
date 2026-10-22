@@ -3,7 +3,7 @@
 /* Zwei Werkstattbilder: natürliche Proportionen, Bild 1 dicht unter Panorama, beide vergrößerbar */
 .family-picture-button{display:block;position:relative;width:100%;padding:0;margin:0;border:1px solid #57604a66;border-radius:15px;overflow:hidden;background:#172019;cursor:zoom-in;line-height:0;box-shadow:0 10px 26px #0006}
 .family-picture-button img{display:block;width:100%;height:auto;object-fit:contain}
-.family-picture-first{margin-top:7px}
+.family-picture-first{margin-top:30px}
 .family-picture-last{margin-top:22px}
 .family-picture-button:focus-visible{outline:3px solid #d88c48;outline-offset:3px}
 .family-picture-dialog{max-width:98vw;max-height:95vh;width:max-content;padding:44px 12px 12px;border:1px solid #697660;border-radius:15px;background:#101613;box-shadow:0 20px 75px #000d;color:#fff;overflow:auto}
