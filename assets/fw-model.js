@@ -1589,10 +1589,76 @@ const SCHEMA = {
       "dflt_value": null,
       "pk": 0
     }
+  },
+  "catalog_items": {
+  "id": {
+    "cid": 0,
+    "name": "id",
+    "type": "INTEGER",
+    "notnull": 0,
+    "dflt_value": null,
+    "pk": 1
+  },
+  "catalog_key": {
+    "cid": 1,
+    "name": "catalog_key",
+    "type": "TEXT",
+    "notnull": 1,
+    "dflt_value": null,
+    "pk": 0
+  },
+  "kind": {
+    "cid": 2,
+    "name": "kind",
+    "type": "TEXT",
+    "notnull": 1,
+    "dflt_value": null,
+    "pk": 0
+  },
+  "title": {
+    "cid": 3,
+    "name": "title",
+    "type": "TEXT",
+    "notnull": 1,
+    "dflt_value": null,
+    "pk": 0
+  },
+  "payload": {
+    "cid": 4,
+    "name": "payload",
+    "type": "TEXT",
+    "notnull": 1,
+    "dflt_value": null,
+    "pk": 0
+  },
+  "origin_pack": {
+    "cid": 5,
+    "name": "origin_pack",
+    "type": "TEXT",
+    "notnull": 1,
+    "dflt_value": "''",
+    "pk": 0
+  },
+  "created_at": {
+    "cid": 6,
+    "name": "created_at",
+    "type": "TEXT",
+    "notnull": 1,
+    "dflt_value": null,
+    "pk": 0
+  },
+  "updated_at": {
+    "cid": 7,
+    "name": "updated_at",
+    "type": "TEXT",
+    "notnull": 1,
+    "dflt_value": null,
+    "pk": 0
   }
+}
 };
 const ADDITIVE22 = {"vehicles": {"hsn": "", "tsn": "", "summer_tires": "", "winter_tires": "", "all_season_tires": "", "summer_tires_rear": "", "winter_tires_rear": "", "all_season_tires_rear": "", "tires_mounted": ""}, "maintenance": {"interval_km": null, "interval_months": null, "interval_mode": "", "interval_origin": "", "interval_source": "", "interval_url": "", "interval_condition": "", "interval_base_date": "", "interval_base_mileage": null, "interval_catalog_ref": "", "interval_key": ""}};
-const ORDER=['brands','software','adapters','software_brands','vehicles','cases','tests','maintenance','expenses','attachments','case_steps','knowledge_entries','equipment','ideas'];
+const ORDER=['brands','software','adapters','software_brands','vehicles','cases','tests','maintenance','expenses','attachments','case_steps','knowledge_entries','equipment','ideas','catalog_items'];
 const FK={software_brands:{software_id:'software',brand_id:'brands'},vehicles:{brand_id:'brands'},cases:{vehicle_id:'vehicles',software_id:'software',adapter_id:'adapters'},tests:{vehicle_id:'vehicles',software_id:'software',adapter_id:'adapters'},maintenance:{vehicle_id:'vehicles'},expenses:{vehicle_id:'vehicles',case_id:'cases'},attachments:{vehicle_id:'vehicles',case_id:'cases'},case_steps:{case_id:'cases'},knowledge_entries:{brand_id:'brands',vehicle_id:'vehicles',source_case_id:'cases'}};
 const UUID=/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const clone=x=>x===undefined?undefined:JSON.parse(JSON.stringify(x));
@@ -1609,7 +1675,7 @@ function fromPortable(snap,datasetId){const doc=empty(datasetId||snap?.dataset_i
 }
 function toPortable(doc){const snap={format:'MeineFahrzeugwerkstattPortable',format_version:1,dataset_id:doc.dataset_id,generated_at:new Date().toISOString(),entities:Object.fromEntries(ORDER.map(t=>[t,[]])),deleted:[]};for(const r of Object.values(doc.records)){if(r.deleted){snap.deleted.push({entity:r.entity,portable_id:r.uid});continue}const data=clone(r.data);data.id=r.uid;snap.entities[r.entity].push({portable_id:r.uid,revision:1,data});}return snap}
 function defaults(entity,values={}){const data={};for(const [field,s] of Object.entries(SCHEMA[entity]||{})){if(field==='id'||field==='search_text')continue;const d=s.dflt_value;if(d!==null)data[field]=s.type==='INTEGER'?Number(d):String(d).replace(/^'|'$/g,'');else data[field]=s.notnull?(s.type==='INTEGER'?0:''):null;}Object.assign(data,values);const now=new Date().toISOString();if('created_at'in data&&!data.created_at)data.created_at=now;if('updated_at'in data)data.updated_at=now;return data}
-function validate(doc){if(!doc||doc.format!=='FWCloud'||doc.version!==1||!doc.records||Array.isArray(doc.records))throw Error('Unbekanntes Synchronisationsformat.');if(doc.dataset_id!==null&&!UUID.test(doc.dataset_id))throw Error('Ungültige Datenbestandskennung.');const entries=Object.entries(doc.records);if(entries.length>25000)throw Error('Mehr als 25.000 Datensätze: Abgleich angehalten.');const intervalPlans=new Set();const uniques={brands:new Set(),software:new Set(),attachments:new Set(),knowledge_entries:new Set(),software_brands:new Set()};for(const [k,r]of entries){if(!r||!ORDER.includes(r.entity)||!UUID.test(r.uid)||k!==key(r.entity,r.uid)||typeof r.deleted!=='boolean')throw Error('Ungültige Datensatzkennung.');if(r.deleted){if(r.data!==null)throw Error('Löschvermerk enthält unerwartete Daten.');continue}if(!r.data||Array.isArray(r.data))throw Error('Datensatz ohne Inhalt.');const d=r.data,fields=SCHEMA[r.entity];for(const f of Object.keys(d)){if(f==='_software_key'&&r.entity==='software')continue;if(!fields[f]||f==='id'||f==='search_text')throw Error('Unzulässiges Feld '+r.entity+'.'+f);}
+function validate(doc){if(!doc||doc.format!=='FWCloud'||doc.version!==1||!doc.records||Array.isArray(doc.records))throw Error('Unbekanntes Synchronisationsformat.');if(doc.dataset_id!==null&&!UUID.test(doc.dataset_id))throw Error('Ungültige Datenbestandskennung.');const entries=Object.entries(doc.records);if(entries.length>25000)throw Error('Mehr als 25.000 Datensätze: Abgleich angehalten.');const intervalPlans=new Set();const uniques={brands:new Set(),software:new Set(),attachments:new Set(),knowledge_entries:new Set(),software_brands:new Set(),catalog_items:new Set()};for(const [k,r]of entries){if(!r||!ORDER.includes(r.entity)||!UUID.test(r.uid)||k!==key(r.entity,r.uid)||typeof r.deleted!=='boolean')throw Error('Ungültige Datensatzkennung.');if(r.deleted){if(r.data!==null)throw Error('Löschvermerk enthält unerwartete Daten.');continue}if(!r.data||Array.isArray(r.data))throw Error('Datensatz ohne Inhalt.');const d=r.data,fields=SCHEMA[r.entity];for(const f of Object.keys(d)){if(f==='_software_key'&&r.entity==='software')continue;if(!fields[f]||f==='id'||f==='search_text')throw Error('Unzulässiges Feld '+r.entity+'.'+f);}
  for(const [f,s]of Object.entries(fields)){if(f==='id'||f==='search_text')continue;const v=d[f];if(v===undefined){if(Object.hasOwn(ADDITIVE22[r.entity]||{},f))continue;throw Error('Unvollständiger Datensatz: '+r.entity+'.'+f);}if(s.notnull&&(v===null||(typeof v==='string'&&({brands:['name'],software:['name'],adapters:['name'],vehicles:['model'],cases:['date','description'],tests:['tested_at'],maintenance:['title'],expenses:['date','description'],equipment:['name'],ideas:['title'],case_steps:['title'],knowledge_entries:['title']}[r.entity]||[]).includes(f)&&v.trim()==='')))throw Error('Pflichtfeld fehlt: '+r.entity+'.'+f);if(v===null)continue;if(FK[r.entity]?.[f]){const target=doc.records[key(FK[r.entity][f],v)];if(!UUID.test(v)||!target||target.deleted)throw Error('Verknüpfung fehlt: '+r.entity+'.'+f+'. Möglicher Löschkonflikt; kein Abgleich durchgeführt.');}else if(s.type==='INTEGER'){if(!Number.isSafeInteger(v))throw Error('Ungültige Zahl: '+f);}else if(typeof v!=='string'||v.length>300000||v.includes('\u0000'))throw Error('Ungültiger Text: '+f);}
  for(const f of ['favorite','position','remind_months','warn_km','mileage','build_year','model_year','due_mileage','done_mileage','amount_cents','interval_km','interval_months','interval_base_mileage']){
   if(d[f]!==undefined&&d[f]!==null&&(!Number.isSafeInteger(d[f])||d[f]<0||d[f]>2000000000))throw Error('Ungültiger Zahlenbereich: '+f);
@@ -1647,7 +1713,7 @@ function validate(doc){if(!doc||doc.format!=='FWCloud'||doc.version!==1||!doc.re
  if(r.entity==='ideas'&&(d.title.length>250||d.description.length>20000))throw Error('Ideentext ist zu lang.');
  if(r.entity==='ideas'&&!['Neu','Geplant','In Arbeit','Umgesetzt'].includes(d.status))throw Error('Ungültiger Ideenstatus.');
  if(r.entity==='knowledge_entries'&&!['Fehlersuche','Wartung'].includes(d.category))throw Error('Wissensbereich ungültig.');
- let u=null;if(r.entity==='brands')u=d.name;if(r.entity==='software'){u=d._software_key;if(typeof u!=='string'||!/^[A-Za-z0-9_-]{1,100}$/.test(u))throw Error('Softwarekennung ungültig.');}if(r.entity==='attachments')u=d.stored_name;if(r.entity==='knowledge_entries')u=d.seed_key;if(r.entity==='software_brands')u=d.software_id+'|'+d.brand_id;if(u){if(uniques[r.entity].has(u))throw Error('Doppelte eindeutige Zuordnung: '+r.entity+'. Nicht blind zusammenführen.');uniques[r.entity].add(u);}}
+ let u=null;if(r.entity==='brands')u=d.name;if(r.entity==='software'){u=d._software_key;if(typeof u!=='string'||!/^[A-Za-z0-9_-]{1,100}$/.test(u))throw Error('Softwarekennung ungültig.');}if(r.entity==='attachments')u=d.stored_name;if(r.entity==='knowledge_entries')u=d.seed_key;if(r.entity==='catalog_items'){u=d.catalog_key;if(!['wartung','diagnose','wissen'].includes(d.kind)||!d.catalog_key||!/^[-A-Za-z0-9_:/.]{4,160}$/.test(d.catalog_key)||d.payload.length>60000||d.title.length>250)throw Error('Ungültiger Katalogeintrag.');try{const x=JSON.parse(d.payload);if(!x||typeof x!=='object'||Array.isArray(x)||x.id!==d.catalog_key||x.kind!==d.kind)throw Error();}catch{throw Error('Ungültige Katalogdaten.');}}if(r.entity==='software_brands')u=d.software_id+'|'+d.brand_id;if(u){if(uniques[r.entity].has(u))throw Error('Doppelte eindeutige Zuordnung: '+r.entity+'. Nicht blind zusammenführen.');uniques[r.entity].add(u);}}
  return true;}
 // Three-way merge, with explicit record-level conflicts. No last-writer-wins.
 function upgrade(doc){const out=clone(doc);for(const r of Object.values(out?.records||{})){if(r&&!r.deleted&&r.data&&typeof r.data==='object'&&!Array.isArray(r.data)){for(const [k,v] of Object.entries(ADDITIVE22[r.entity]||{}))if(r.data[k]===undefined)r.data[k]=v;}}return out;}

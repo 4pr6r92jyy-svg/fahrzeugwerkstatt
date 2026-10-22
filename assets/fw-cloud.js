@@ -34,10 +34,10 @@ class Engine{
   if(ctx.state.paused)throw Error('Abgleich nach Wiederherstellung pausiert. Erst Sicherung und Datenstände prüfen.');
   let head=await this.transport.head(),remote=null,revision=head.revision;
   if(revision===0){if(!this.primary||!this.config.allowCreate)throw Error('Die Cloud ist noch leer. Zuerst am Surface anmelden und den Erstabgleich bestätigen.');remote=M.empty(ctx.doc.dataset_id);}
-  else if(ctx.state.client_schema===22&&ctx.state.revision===revision&&ctx.state.base)remote=M.clone(ctx.state.base);
+  else if(ctx.state.client_schema===23&&ctx.state.revision===revision&&ctx.state.base)remote=M.clone(ctx.state.base);
   else {const fetched=await this.transport.read();revision=fetched.revision;remote=fetched.document;}
   if(!active())return;if(!remote)throw Error('Cloud-Datenbestand fehlt.');M.validate(remote);const remoteWire=M.clone(remote);remote=M.upgrade(remote);
-  if(ctx.state.client_schema===22&&ctx.state.binding===binding&&ctx.state.revision===revision&&ctx.state.base&&M.equal(ctx.doc,ctx.state.base)&&M.equal(ctx.doc,M.upgrade(ctx.doc))&&!force){this.status('Alles synchronisiert · '+new Date().toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'}),'ok');return;}
+  if(ctx.state.client_schema===23&&ctx.state.binding===binding&&ctx.state.revision===revision&&ctx.state.base&&M.equal(ctx.doc,ctx.state.base)&&M.equal(ctx.doc,M.upgrade(ctx.doc))&&!force){this.status('Alles synchronisiert · '+new Date().toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'}),'ok');return;}
   const local=M.upgrade(ctx.doc);if(local.dataset_id&&remote.dataset_id&&local.dataset_id!==remote.dataset_id)throw Error('Diese Daten gehören zu einem anderen Fahrzeugbestand. Kein automatisches Überschreiben.');
   local.dataset_id=remote.dataset_id||local.dataset_id;
   if(!local.dataset_id)throw Error('Datenbestandskennung fehlt.');
@@ -54,7 +54,7 @@ class Engine{
   }
   if(!active())return;if(this.isEditing()){this.status('Eingabe aktiv · Abgleich nach dem Speichern','waiting');this.schedule(2000);return;}
   if(!M.equal(plan.doc,remoteWire)){const written=await this.transport.save(revision,plan.doc);if(!written.ok){this.status('Anderes Gerät hat gespeichert · erneuter Vergleich','waiting');this.schedule(1000);return;}revision=written.revision;remote=M.clone(plan.doc);}
-  const nextState={base:remote,revision,binding,client_schema:22,last_sync:new Date().toISOString(),choices:{},conflicts:[],paused:false};
+  const nextState={base:remote,revision,binding,client_schema:23,last_sync:new Date().toISOString(),choices:{},conflicts:[],paused:false};
   // The adapter checks ctx.hash in one transaction. Never clobber local edits made
   // while network requests were in flight. The next run re-evaluates against base.
   if(!active())return;if(this.isEditing()){this.status('Eingabe aktiv · Datenstand später übernehmen','waiting');this.schedule(2000);return;}
