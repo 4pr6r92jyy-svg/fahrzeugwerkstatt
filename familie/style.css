@@ -10,3 +10,8 @@
 .family-picture-dialog::backdrop{background:rgba(0,0,0,.9)}
 .family-picture-dialog img{display:block;max-width:none;width:auto;height:auto;max-height:calc(95vh - 80px);max-width:calc(98vw - 28px);object-fit:contain}
 .family-picture-close{position:sticky;top:-35px;float:right;z-index:2;margin-top:-36px;width:36px;height:36px;background:#d88c48;color:#111b16;border:0;border-radius:50%;font-size:28px;cursor:pointer;line-height:1}
+
+/* 2.3.2: Bild 1 als flaches Panoramafenster – kein Verzerren; Zoom zeigt Original vollständig. */
+.family-picture-first{aspect-ratio:3/1; margin-top:38px}
+.family-picture-first img{width:100%;height:100%;object-fit:cover;object-position:center 52%}
+@media(max-width:600px){.family-picture-first{aspect-ratio:2.4/1;margin-top:28px}}
