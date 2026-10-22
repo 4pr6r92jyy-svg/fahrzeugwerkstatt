@@ -1,7 +1,7 @@
 /* Only the explicit public application shell is cached. Private vehicle records
    stay in IndexedDB; Supabase requests and credentials never enter this cache. */
 'use strict';
-const BUILD='2.3.1-family-20261022';
+const BUILD='2.3.2-family-20261022';
 const CACHE_PREFIX='fahrzeugwerkstatt-mobile-'+encodeURIComponent(new URL(self.registration.scope).pathname)+'-';
 const CACHE=CACHE_PREFIX+BUILD;
 const FILES=['./assets/family-admin.js','./assets/family-admin.css','./assets/family-mobile.js','./assets/curated-23.js','./assets/public-knowledge-index.js','./assets/catalog-manager.js','./assets/research-case.js','./assets/catalog-manager.css','./assets/workshop22-core.js','./assets/workshop22-ui.js','./assets/workshop22.css','./assets/branding/panorama.png','./assets/branding/logo.png','./index.html','./assets/style.css','./assets/cloud.css','./assets/app.js','./assets/mobile-v2.js','./assets/vehicle-cover.js','./assets/vehicle-cover.css','./assets/fw-model.js','./assets/fw-cloud.js','./assets/fw-sync-ui.js','./assets/workshop21.js','./assets/workshop21.css','./assets/intervals21.js','./assets/vehicle-catalog21.js','./assets/jszip.min.js','./manifest.webmanifest','./icon-192.png','./icon-512.png'];
