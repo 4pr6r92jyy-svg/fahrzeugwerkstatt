@@ -6,11 +6,53 @@ let snapshot=null,loading=false,message='',isError=false,initialized=false;
 function config(){try{return JSON.parse(localStorage.getItem('fwcloud.config.v1')||'null')}catch{return null}}
 function transport(){const t=root.fwCloud?.transport;if(!t?.session?.access_token)throw Error('Zuerst unter „Abgleich & Geräte“ mit deinem Werkstattzugang anmelden.');return t}
 async function rpc(fn,body={}){const t=transport();return t.json('/rest/v1/rpc/'+fn,body)}
+
+// Familien-Titelbilder: eigenes, auf <= 640 px verkleinertes JPEG, niemals der private Originalanhang.
+const coverMarker='[[FW_COVER_V1]]';
+async function coverBlob(v){
+ if(typeof DATA!=='undefined' && Array.isArray(DATA.attachments)){
+  const local=DATA.vehicles?.find(x=>String(x.family_uid||x.id)===String(v.id));
+  if(!local)return null;
+  const a=DATA.attachments.filter(a=>String(a.vehicle_id)===String(local.id)&&String(a.media_type||'').startsWith('image/')&&String(a.notes||'').startsWith(coverMarker)).sort((a,b)=>Number(b.id)-Number(a.id))[0];
+  if(!a)return null;
+  const r=await fetch('/api/attachments/'+a.id+'/file');if(!r.ok)throw Error('Titelbild auf Windows nicht lesbar');
+  return {blob:await r.blob(), source:String(a.stored_name||a.id)};
+ }
+ if(typeof rows==='function' && typeof kvGet==='function'){
+  const a=rows('attachments').filter(a=>String(a.vehicle_id)===String(v.id)&&String(a.media_type||'').startsWith('image/')&&String(a.notes||'').startsWith(coverMarker)).sort((a,b)=>String(b.id).localeCompare(String(a.id)))[0];
+  if(!a)return null;
+  const blob=await kvGet('files',a.stored_name);
+  if(!blob)throw Error('Titelbild auf diesem Gerät noch nicht offline vorhanden');
+  return {blob,source:String(a.stored_name)};
+ }
+ return null;
+}
+async function compactCover(blob){
+ const bitmap=await createImageBitmap(blob),max=640,scale=Math.min(1,max/Math.max(bitmap.width,bitmap.height));
+ const cv=document.createElement('canvas');cv.width=Math.max(1,Math.round(bitmap.width*scale));cv.height=Math.max(1,Math.round(bitmap.height*scale));
+ const cx=cv.getContext('2d');cx.fillStyle='#f4f4f4';cx.fillRect(0,0,cv.width,cv.height);cx.drawImage(bitmap,0,0,cv.width,cv.height);bitmap.close?.();
+ for(const quality of [.75,.58,.4]){const val=cv.toDataURL('image/jpeg',quality);if(val.length<=155000)return val;}
+ throw Error('Fahrzeugbild konnte nicht unter 115 KB komprimiert werden');
+}
+let coverSync=false;
+async function syncFamilyCovers(){
+ if(coverSync||!snapshot?.vehicles||!root.fwCloud?.transport?.session)return;
+ coverSync=true;try{
+  for(const v of snapshot.vehicles.filter(v=>v.published)){
+   const actual=await coverBlob(v);
+   const source=actual?.source||null;
+   if((v.cover_source||null)===source)continue;
+   await rpc('fw_family_admin_cover',{p_vehicle_id:v.id,p_image:actual?await compactCover(actual.blob):null,p_source:source});
+   v.cover_source=source;
+  }
+ }catch(err){console.warn('Familien-Titelbildabgleich:',err.message)}finally{coverSync=false}
+}
+
 function updateBadge(){const pending=(snapshot?.events||[]).filter(e=>e.status==='Neu'||e.status==='Wartet auf Freigabe').length;const b=document.getElementById('familyCount');if(b){b.hidden=!pending;b.textContent=pending||''}}
 function vehicleCard(uid){if(!uid)return '';const e=(snapshot?.events||[]).filter(x=>x.vehicle_id===uid);return `<section class="card fam-vehicle-card"><div class="sectiontitle"><h3>📣 Familienmeldungen${e.length?' ('+e.length+')':''}</h3><button class="outline mini" data-page="family">Meldungen öffnen →</button></div>${e.length?e.slice(0,4).map(x=>`<p><strong>${E(({mangel:'Mangel',wartung:'Wartung',hu:'HU/AU',km:'Kilometerstand'}[x.kind]||x.kind))}</strong>: ${E(x.payload?.text||((x.payload?.km??'')+' km'))} <small>· ${E(x.status)}</small></p>`).join(''):'<p class="slim">Keine neuen Familienmeldungen bekannt. Öffne „Familienmeldungen“, um den aktuellen Stand zu laden.</p>'}</section>`}
 function redraw(){if(typeof ui!=='undefined'&&ui.page==='family'&&typeof render==='function')render();else if(typeof app!=='undefined'&&app.page==='family'&&typeof render==='function')render();}
 function notify(text,error=false){message=text;isError=error;redraw()}
-async function load(){if(loading)return;loading=true;redraw();try{snapshot=await rpc('fw_family_admin_state');message='';isError=false;}catch(e){snapshot=null;message=e.message;isError=true;}finally{loading=false;updateBadge();redraw()}}
+async function load(){if(loading)return;loading=true;redraw();try{snapshot=await rpc('fw_family_admin_state');message='';isError=false;}catch(e){snapshot=null;message=e.message;isError=true;}finally{loading=false;updateBadge();redraw()}if(snapshot)syncFamilyCovers().catch(()=>{})}
 const msg=()=>message?`<p class="fam-notice ${isError?'fam-error':'fam-success'}" role="status">${E(message)}</p>`:'';
 function renderPanel(){const conf=config(),online=!!root.fwCloud?.transport?.session;
  const url=localStorage.getItem('fwfamily.public_url')||((location.protocol==='https:'&&location.pathname.includes('/'))?new URL('familie/',location.href).href:'');
