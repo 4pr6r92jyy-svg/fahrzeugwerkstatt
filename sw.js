@@ -1,10 +1,10 @@
 /* Only the explicit public application shell is cached. Private vehicle records
    stay in IndexedDB; Supabase requests and credentials never enter this cache. */
 'use strict';
-const BUILD='2.3.2-family-20261022';
+const BUILD='2.3.3-push-20261023';
 const CACHE_PREFIX='fahrzeugwerkstatt-mobile-'+encodeURIComponent(new URL(self.registration.scope).pathname)+'-';
 const CACHE=CACHE_PREFIX+BUILD;
-const FILES=['./assets/family-admin.js','./assets/family-admin.css','./assets/family-mobile.js','./assets/curated-23.js','./assets/public-knowledge-index.js','./assets/catalog-manager.js','./assets/research-case.js','./assets/catalog-manager.css','./assets/workshop22-core.js','./assets/workshop22-ui.js','./assets/workshop22.css','./assets/branding/panorama.png','./assets/branding/logo.png','./index.html','./assets/style.css','./assets/cloud.css','./assets/app.js','./assets/mobile-v2.js','./assets/vehicle-cover.js','./assets/vehicle-cover.css','./assets/fw-model.js','./assets/fw-cloud.js','./assets/fw-sync-ui.js','./assets/workshop21.js','./assets/workshop21.css','./assets/intervals21.js','./assets/vehicle-catalog21.js','./assets/jszip.min.js','./manifest.webmanifest','./icon-192.png','./icon-512.png'];
+const FILES=['./assets/fw-push.js','./assets/family-admin.js','./assets/family-admin.css','./assets/family-mobile.js','./assets/curated-23.js','./assets/public-knowledge-index.js','./assets/catalog-manager.js','./assets/research-case.js','./assets/catalog-manager.css','./assets/workshop22-core.js','./assets/workshop22-ui.js','./assets/workshop22.css','./assets/branding/panorama.png','./assets/branding/logo.png','./index.html','./assets/style.css','./assets/cloud.css','./assets/app.js','./assets/mobile-v2.js','./assets/vehicle-cover.js','./assets/vehicle-cover.css','./assets/fw-model.js','./assets/fw-cloud.js','./assets/fw-sync-ui.js','./assets/workshop21.js','./assets/workshop21.css','./assets/intervals21.js','./assets/vehicle-catalog21.js','./assets/jszip.min.js','./manifest.webmanifest','./icon-192.png','./icon-512.png'];
 const publicURL=path=>new URL(path,self.registration.scope).href;
 const allowed=new Set(FILES.map(path=>new URL(publicURL(path)).pathname));
 const indexURL=publicURL('./index.html');
@@ -45,5 +45,40 @@ self.addEventListener('message',event=>{
   const cache=await caches.open(CACHE);
   for(const path of FILES)if(!(await cache.match(publicURL(path)))){event.ports[0]?.postMessage({ok:false,missing:path,version:BUILD});return;}
   event.ports[0]?.postMessage({ok:true,version:BUILD});
+ })());
+});
+
+/* Push-Erweiterung 2.3.3: Keine Änderung an bestehenden Offline-Handlern. */
+self.addEventListener('push',event=>{
+ event.waitUntil((async()=>{
+  let data={};
+  try{data=event.data?.json()||{}}catch{}
+  const id=typeof data.id==='string'&&/^[0-9a-f-]{36}$/i.test(data.id)?data.id:crypto.randomUUID();
+  const title=typeof data.title==='string'?data.title.slice(0,90):'Neue Familienmeldung';
+  const body=typeof data.body==='string'?data.body.slice(0,180):'Neue Meldung aus „Was klappert denn da?“';
+  await self.registration.showNotification(title,{
+   body,tag:'fw-family-'+id,renotify:false,
+   icon:new URL('./icon-192.png',self.registration.scope).href,
+   data:{target:'family'}
+  });
+ })());
+});
+self.addEventListener('notificationclick',event=>{
+ event.notification.close();
+ event.waitUntil((async()=>{
+  const opened=await self.clients.matchAll({type:'window',includeUncontrolled:true});
+  // Do not focus the separate public /familie/ website: only the private app shell.
+  const scopeURL=new URL(self.registration.scope);
+  const active=opened.find(client=>{
+   const url=new URL(client.url);
+   return url.origin===scopeURL.origin &&
+     (url.pathname===scopeURL.pathname || url.pathname===scopeURL.pathname+'index.html');
+  });
+  if(active){
+   await active.focus();
+   active.postMessage({type:'FW_PUSH_OPEN_FAMILY'});
+   return;
+  }
+  await self.clients.openWindow(new URL('./?fw_push=family',self.registration.scope).href);
  })());
 });
