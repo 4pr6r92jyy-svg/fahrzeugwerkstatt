@@ -1,0 +1,14 @@
+/* Nur der neue Besitzer-Papierkorb. Keine Änderungen an Familie, Logo oder Panoramen. */
+.fam-admin .fw-trash-panel{border-color:#69745b;background:#222a23}
+.fw-trash-head{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.fw-trash-head h2{margin:0 0 5px}.fw-trash-head .fam-small{margin:0}
+.fw-trash-body{padding-top:12px}.fw-trash-controls{display:grid;grid-template-columns:minmax(200px,2fr) minmax(130px,1fr) auto;gap:12px;align-items:end}
+.fw-trash-controls label{display:block;font-size:.91rem;font-weight:650;min-width:0}
+.fw-trash-controls input,.fw-trash-controls select{display:block;width:100%;margin:5px 0 0;box-sizing:border-box;min-height:45px;border-radius:9px;background:#171c19;color:#faf5e9;border:1px solid #65705e;padding:10px;font:inherit}
+.fw-trash-controls .fam-btn{margin-bottom:0;white-space:normal}
+.fw-trash-item{background:#191f1a;border:1px solid #5b6a52;border-radius:12px;padding:14px;margin:11px 0}
+.fw-trash-item-heading{display:flex;gap:8px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.fw-trash-status{font-size:.8rem;border-radius:20px;background:#495743;padding:6px 10px;white-space:nowrap}
+.fw-trash-description{font-size:1rem;margin:.65rem 0;white-space:pre-wrap;overflow-wrap:anywhere}
+.fw-trash-item .fam-small{margin:.25rem 0}.fw-trash-tip{border-top:1px solid #59625380;padding-top:11px}
+@media(max-width:650px){.fw-trash-controls{grid-template-columns:1fr}.fw-trash-item{padding:11px}}
