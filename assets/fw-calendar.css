@@ -1,1 +1,68 @@
 .fwcal-wrapper,.fwcal-mini{background:var(--card,#fff);padding:16px;border-radius:14px;border:1px solid #9b9b9b35;margin:14px 0}.fwcal-toolbar,.fwcal-modes,.fwcal-actions,.fwcal-minihead{display:flex;gap:9px;align-items:center;flex-wrap:wrap;justify-content:space-between}.fwcal-toolbar h2{margin:4px 0;font-size:1.1rem}.fwcal-toolbar button,.fwcal-modes button,.fwcal-actions button,.fwcal-item button,.fwcal-mini button,#fwcal-form button{border:1px solid #a4a4a4;background:transparent;color:inherit;border-radius:8px;padding:8px 12px;cursor:pointer}.fwcal-modes{justify-content:flex-start;margin:12px 0}.fwcal-modes [aria-pressed=true]{background:#30563b;color:white}.fwcal-weekdays,.fwcal-days{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px}.fwcal-weekdays span{text-align:center;font-size:.8em;padding:8px 0}.fwcal-day{min-height:68px;padding:5px;background:transparent;color:inherit;border:1px solid #9995;border-radius:8px;display:flex;flex-direction:column;align-items:flex-start;justify-content:space-between;cursor:pointer}.fwcal-day.outside{opacity:.35}.fwcal-day.chosen{outline:2px solid #417d53}.fwcal-day small{font-size:.6rem}.fwcal-dots{display:flex;gap:3px}.fwcal-dots i{width:7px;height:7px;border-radius:50%;background:#d29331}.fwcal-dots i.done{background:#328356}.fwcal-item{display:flex;justify-content:space-between;gap:10px;align-items:center;padding:12px;margin:8px 0;border-radius:8px;border:1px solid #8884}.fwcal-item p{margin:4px 0}.fwcal-item small{opacity:.7}.fwcal-selection{margin-top:14px}.fwcal-minihead h2{font-size:1.05rem;margin:0}.fwcal-mini p{margin:9px 0}.fwcal-hint{opacity:.75;font-size:.83rem}#fwcal-form{display:grid;gap:12px;padding:8px}#fwcal-form label{display:grid;gap:4px}#fwcal-form input,#fwcal-form select,#fwcal-form textarea{max-width:100%;min-height:39px;font:inherit;border:1px solid #8887;border-radius:7px;padding:7px;background:var(--card,#fff);color:inherit}@media(max-width:600px){.fwcal-day{min-height:52px}.fwcal-day small{display:none}.fwcal-wrapper{padding:9px}.fwcal-item{flex-direction:column;align-items:flex-start}}
+
+/* 2.3.5 iPhone-Theme-Fix: keep new calendar and home widgets in the
+   existing dark workshop palette, independent of undefined --card. */
+:root { color-scheme: dark; }
+.fwcal-wrapper,
+.fwcal-mini {
+  background: #1c251c;
+  color: #e6eedc;
+  border: 1px solid #3a4b35;
+  box-shadow: 0 8px 20px rgba(0,0,0,.13);
+}
+.fwcal-wrapper :is(h1,h2,h3,strong),
+.fwcal-mini :is(h1,h2,h3,strong) { color: #e6eedc; }
+.fwcal-wrapper :is(p,small,.fwcal-hint),
+.fwcal-mini :is(p,small,.fwcal-hint) { color: #b1bfa5; }
+.fwcal-toolbar button,
+.fwcal-modes button,
+.fwcal-actions button,
+.fwcal-item button,
+.fwcal-mini button,
+#fwcal-form button,
+#fwcal-quick-form button {
+  background: #253225;
+  color: #e6eedc;
+  border: 1px solid #556b4b;
+  border-radius: 10px;
+  opacity: 1;
+  -webkit-text-fill-color: currentColor;
+}
+.fwcal-wrapper button:disabled,
+.fwcal-mini button:disabled { opacity: .5; }
+.fwcal-toolbar button:focus-visible,
+.fwcal-modes button:focus-visible,
+.fwcal-actions button:focus-visible,
+.fwcal-day:focus-visible,
+.fwcal-mini button:focus-visible { outline: 2px solid #d19455; outline-offset: 2px; }
+.fwcal-modes button[aria-pressed="true"] { background: #405b34; color: #fff3dc; border-color: #819a65; }
+.fwcal-day {
+  background: #222f20;
+  color: #e6eedc;
+  border-color: #465a3e;
+}
+.fwcal-day.outside { opacity: .48; }
+.fwcal-day.chosen { background: #344c30; outline: 2px solid #a8bb75; outline-offset: -2px; }
+.fwcal-weekdays span { color: #b1bfa5; }
+.fwcal-item { background: #222f20; border-color: #465a3e; }
+.fwcal-item small { color: #b1bfa5; opacity: 1; }
+.fwcal-selection { border-top: 1px solid #3a4b35; padding-top: 12px; }
+#fwcal-form input,
+#fwcal-form select,
+#fwcal-form textarea,
+#fwcal-quick-form input,
+#fwcal-quick-form select {
+  background: #111b14;
+  color: #e6eedc;
+  border: 1px solid #556b4b;
+  color-scheme: dark;
+}
+#fwcal-form label,
+#fwcal-quick-form label { color: #e6eedc; }
+@media(max-width:600px) {
+  .fwcal-toolbar { justify-content:flex-start; }
+  .fwcal-toolbar h2 { flex: 1; text-align: center; min-width: 120px; }
+  .fwcal-toolbar button, .fwcal-modes button, .fwcal-actions button { min-height: 42px; }
+  .fwcal-day { min-width:0; }
+  .fwcal-day strong { font-size:.92rem; }
+}
