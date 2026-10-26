@@ -18,3 +18,17 @@
 
 /* Erweiterung 2.3.5 */
 .family-reply{border-left:3px solid #3d8ca1;background:rgba(65,143,161,.09);padding:10px 12px;margin:10px 0;border-radius:6px}.family-reply p{margin:.35rem 0}.family-photo-hint{font-size:.85rem;opacity:.8}
+
+/* 2.3.5: Drei unabhängig auswählbare Fotos statt eines überschreibenden Dateifelds. */
+.family-photo-fieldset{border:0;padding:0;margin:17px 0 0;min-width:0}
+.family-photo-fieldset legend{font-weight:700;margin-bottom:10px}
+.family-photo-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.family-photo-slot{min-width:0;text-align:center}
+.family-card .family-photo-picker{display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;aspect-ratio:1 / 1;margin:0;border:2px dashed #879479;border-radius:12px;cursor:pointer;background:#17221a;color:#faf7ed}
+.family-photo-picker:focus-within{outline:2px solid #d88c48}
+.family-slot-empty{font-size:1.55rem;line-height:1.3}
+.family-slot-empty small{display:block;font-size:.76rem;margin-top:6px}
+.family-slot-image{width:100%;height:100%;object-fit:cover}
+.family-photo-input{position:absolute!important;width:1px!important;height:1px!important;opacity:0!important;padding:0!important;margin:0!important;overflow:hidden!important}
+.family-photo-remove{margin:6px 0 0;padding:6px 8px;background:#47302b;color:#fff;border:1px solid #af8b7a;border-radius:7px;cursor:pointer;font:inherit;font-size:.82rem}
+.family-photo-hint{margin-top:10px}
