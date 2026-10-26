@@ -1,0 +1,24 @@
+
+/* 2.3.5: optional calendar and technical-data interface. */
+.fw235-home{margin-top:14px}.fw235-home .title-row{display:flex;gap:8px;align-items:center;justify-content:space-between}.fw235-home .title-row h2{margin:0}.fw235-home p{border-bottom:1px solid #d4d7d1;padding:7px 0}.fw235-date{display:inline-block;margin-left:6px;color:var(--muted,#647068);font-size:.89em}.fw235-pre{white-space:pre-line;line-height:1.5}.fw235-home .actions,.fw235-actions{flex-wrap:wrap}.fw235-home .actions .btn{flex:0 1 auto}
+
+
+/* 2.3.5 · accessible month/week/list workshop planner, reusing maintenance records */
+.fwcal-planner{margin:18px 0 24px}.fwcal-viewbar{display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap}
+.fwcal-viewbuttons,.fwcal-viewnav{display:flex;gap:5px;flex-wrap:wrap}.fwcal-viewbuttons button,.fwcal-viewnav button{background:#233026;color:#eee9dc;border:1px solid #65715e;border-radius:9px;min-height:38px;padding:7px 12px;cursor:pointer}
+.fwcal-viewbuttons button.active{background:#576d48;border-color:#a5b48c}.fwcal-period{margin:14px 0 10px}
+.fwcal-daygrid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px}.fwcal-weekday{text-align:center;padding:8px 1px;font-size:.8rem;opacity:.78}
+.fwcal-day{display:flex;flex-direction:column;gap:5px;align-items:flex-start;justify-content:flex-start;min-width:0;min-height:69px;background:#1d281f;border:1px solid #566550;border-radius:8px;color:#fff;padding:7px 5px;cursor:pointer}
+.fwcal-day small{font-size:.67rem;color:#e0ae76;overflow-wrap:anywhere}.fwcal-day.outside{opacity:.55}.fwcal-day.active{border:2px solid #e0ae76;background:#3c4934}.fwcal-day.today b{text-decoration:underline;text-decoration-thickness:2px}
+.fwcal-agenda,.fwcal-monthonly{margin:15px 0 22px}.fwcal-item,.fw235-item{margin:8px 0}.fwcal-completed,.fw235-completed{padding:13px;border:1px solid #566550;border-radius:10px;margin:12px 0}.fwcal-completed summary,.fw235-completed summary{cursor:pointer;font-weight:bold}
+@media(max-width:600px){.fwcal-day{min-height:57px;padding:5px 3px}.fwcal-day small{font-size:.6rem}.fwcal-viewbar{display:block}.fwcal-viewnav{margin-top:8px}.fwcal-weekday{font-size:.7rem}}
+
+/* iPhone 2.3.5: vier Wissensbereiche auf schmalen Displays gut bedienbar. */
+@media(max-width:540px){
+ .shell .tabs{flex-wrap:wrap}
+ .shell .tabs button{flex:1 1 calc(50% - 8px);min-width:0}
+}
+.fw-mobile-catalog-entry summary{cursor:pointer}
+.fw-mobile-catalog-entry summary h3,.fw-mobile-knowledge-entry h3{overflow-wrap:anywhere}
+.fw-mobile-catalog-entry .fwcat-content{margin-top:12px;border-top:1px solid var(--line);padding-top:12px}
+.fw-mobile-catalog-entry .fwcat-content a{overflow-wrap:anywhere}
