@@ -12,3 +12,11 @@
 .fw-trash-description{font-size:1rem;margin:.65rem 0;white-space:pre-wrap;overflow-wrap:anywhere}
 .fw-trash-item .fam-small{margin:.25rem 0}.fw-trash-tip{border-top:1px solid #59625380;padding-top:11px}
 @media(max-width:650px){.fw-trash-controls{grid-template-columns:1fr}.fw-trash-item{padding:11px}}
+
+/* Besitzerbuttons in Windows und iPhone; per Supabase-RPC abgesichert. */
+.fw-trash-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px;padding-top:11px;border-top:1px solid #59625380}
+.fw-trash-actions .fam-btn{min-height:42px;margin:0}
+.fw-trash-purge{border:1px solid #b67549!important;color:#ffd8bd!important;background:#392922!important}
+.fw-trash-purge:hover,.fw-trash-purge:focus-visible{background:#553427!important}
+.fw-trash-actions .fam-btn:disabled{opacity:.55;cursor:not-allowed}
+@media(max-width:500px){.fw-trash-actions .fam-btn{flex:1 1 100%}}
