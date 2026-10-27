@@ -32,3 +32,17 @@
 .family-photo-input{position:absolute!important;width:1px!important;height:1px!important;opacity:0!important;padding:0!important;margin:0!important;overflow:hidden!important}
 .family-photo-remove{margin:6px 0 0;padding:6px 8px;background:#47302b;color:#fff;border:1px solid #af8b7a;border-radius:7px;cursor:pointer;font:inherit;font-size:.82rem}
 .family-photo-hint{margin-top:10px}
+
+/* 2.3.5: Separater Administratorbereich ohne Zugriff für Familiencode. */
+.family-owner summary{font-weight:750;cursor:pointer;color:#e9eedb;padding:3px 0}
+.family-owner-intro{font-size:.92rem}
+.family-owner-event{border-bottom:1px solid #5b695260}
+.family-owner-event .family-minibutton{margin-top:9px;cursor:pointer}
+.family-owner-delete{background:#56382e;border-color:#b68560;color:#fff0da}
+.family-owner-existing{display:block;width:100%;margin-top:13px;cursor:pointer}
+.family-owner .family-flex{flex-wrap:wrap}
+.family-owner .family-event small{float:none;display:block;margin:4px 0}
+.family-owner .family-minibutton:disabled{opacity:.5}
+
+/* Fahrzeugfotos: getrennt von Titelbild und Mängelfotos */
+.family-gallery summary{font-weight:750;cursor:pointer}.family-gallery-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.family-gallery-item{min-width:0;background:#17221a;border:1px solid #617258;border-radius:12px;padding:8px}.family-gallery-item img{aspect-ratio:4/3;object-fit:cover}.family-gallery-item p{margin:7px 0;font-size:.9rem}.family-owner h3{margin:22px 0 7px}.family-gallery input[type=file]{font-size:14px}@media(min-width:600px){.family-gallery-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
