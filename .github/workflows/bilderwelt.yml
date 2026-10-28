@@ -1,1 +1,30 @@
+name: Bilderwelt automatisch aktualisieren
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'familie/assets/bilderwelt/**'
+      - 'scripts/bilderwelt_liste.py'
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  bilderliste:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Bilderliste erzeugen
+        run: python scripts/bilderwelt_liste.py
+      - name: Bilderliste übernehmen
+        run: |
+          git add familie/bilderwelt.json
+          if ! git diff --cached --quiet; then
+            git -c user.name='github-actions[bot]' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' commit -m 'Bilderwelt: Bildliste aktualisieren'
+            git push
+          fi
 
