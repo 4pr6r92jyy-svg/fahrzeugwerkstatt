@@ -5,7 +5,8 @@ on:
     paths:
       - 'familie/assets/bilderwelt/**'
       - 'scripts/bilderwelt_liste.py'
-  workflow_dispatch:
+      - '.github/workflows/bilderwelt.yml'
+  workflow_dispatch: {}
 permissions:
   contents: write
 jobs:
@@ -27,4 +28,3 @@ jobs:
             git -c user.name='github-actions[bot]' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' commit -m 'Bilderwelt: Bildliste aktualisieren'
             git push
           fi
-
