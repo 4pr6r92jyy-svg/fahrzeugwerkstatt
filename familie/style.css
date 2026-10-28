@@ -46,3 +46,7 @@
 
 /* Fahrzeugfotos: getrennt von Titelbild und Mängelfotos */
 .family-gallery summary{font-weight:750;cursor:pointer}.family-gallery-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.family-gallery-item{min-width:0;background:#17221a;border:1px solid #617258;border-radius:12px;padding:8px}.family-gallery-item img{aspect-ratio:4/3;object-fit:cover}.family-gallery-item p{margin:7px 0;font-size:.9rem}.family-owner h3{margin:22px 0 7px}.family-gallery input[type=file]{font-size:14px}@media(min-width:600px){.family-gallery-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+
+/* Bilderwelt: Link zwischen Überschrift und Familienmeldung */
+.bilderwelt-entry{display:flex;align-items:center;justify-content:center;gap:.75rem;margin:17px auto 18px;padding:13px 20px;width:min(100%,470px);border:1px solid #af8752;border-radius:14px;background:linear-gradient(135deg,#34472f,#253528);color:#fff4d8;text-decoration:none;font-size:1.09rem;font-weight:750;box-shadow:0 6px 18px #0005;transition:filter .15s,transform .15s}
+.bilderwelt-entry:hover{filter:brightness(1.13)}.bilderwelt-entry:focus-visible{outline:3px solid #eea55e;outline-offset:3px}.bilderwelt-entry span{font-size:1.5rem;line-height:1}
