@@ -21,7 +21,7 @@ class Engine{
  constructor(adapter,options={}){this.adapter=adapter;this.transport=options.transport||null;this.notify=options.notify||(()=>{});this.isEditing=options.isEditing||(()=>false);this.primary=!!options.primary;this.busy=false;this.conflicts=[];this.lastDoc=null;this.lastStatus={text:'Cloud nicht eingerichtet',kind:'off',pending:0};this.config=null;this.lastError='';this.timer=null;this.choices={};}
  status(text,kind='info',pending=0){this.lastStatus={text,kind,pending};this.notify(this.lastStatus)}
  async connect(config,session){this.config=config;if(!this.transport)this.transport=new SupabaseTransport(config,session,s=>this.adapter.saveSession(s));if(!this.transport.session&&!this.transport.testMode){this.status('Bitte anmelden','off');return;}this.start();}
- start(){clearInterval(this.timer);this.timer=setInterval(()=>this.sync().catch(()=>{}),60000);this.schedule(400);}
+ start(){clearInterval(this.timer);this.timer=setInterval(()=>this.sync().catch(()=>{}),300000);this.schedule(400);}
  stop(){clearInterval(this.timer);clearTimeout(this.debounce);this.timer=null;this.config=null;this.status('Automatischer Abgleich pausiert','off');}
  schedule(ms=2000){clearTimeout(this.debounce);this.debounce=setTimeout(()=>this.sync().catch(()=>{}),ms);}
  async sync(force=false){if(!this.config?.enabled||!this.transport)return;if(this.busy)return;if(typeof navigator!=='undefined'&&navigator.onLine===false){const ctx=await this.adapter.read();this.status('Offline · Änderungen bleiben lokal','waiting',M.changedCount(ctx.state.base||ctx.state.initial_base,ctx.doc));return;}
