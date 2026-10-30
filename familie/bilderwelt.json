@@ -1,5 +1,16 @@
 {
   "bilder": [
+    "assets/bilderwelt/1_alles.jpg",
+    "assets/bilderwelt/2_FordKugaMK3.PNG",
+    "assets/bilderwelt/3_Hafen.png", 
+    "assets/bilderwelt/4_RenaultTwingo3.PNG",
+    "assets/bilderwelt/5_CarMeet.png",
+    "assets/bilderwelt/6_B_N_A.png",
+    "assets/bilderwelt/7_Grillen Ende.png",
+    "assets/bilderwelt/7a_Selbstbewusster Mann am weißen Ford-SUV.png",
+    "assets/bilderwelt/7b_Selbstbewusste Frau am türkisfarbenen Renault.png",
+    "assets/bilderwelt/8_Exe.png",
+    "assets/bilderwelt/9_Fiat500.png", 
     "assets/bilderwelt/10_Hafenspitze.png",
     "assets/bilderwelt/11_AudiA4B9.PNG",
     "assets/bilderwelt/12_Harnis.png",
@@ -14,7 +25,6 @@
     "assets/bilderwelt/17_FordKugaMK2.PNG",
     "assets/bilderwelt/18_Parkplatz.png",
     "assets/bilderwelt/19_M_P.png",
-    "assets/bilderwelt/1_alles.jpg",
     "assets/bilderwelt/20_Nasse Nacht vor der Flensburger Brauerei.png",
     "assets/bilderwelt/20a_Maritimes Museum mit Hund und SUV.png",
     "assets/bilderwelt/21.1_WKST.jpg",
@@ -28,7 +38,6 @@
     "assets/bilderwelt/27_ChevroletOrlando.PNG",
     "assets/bilderwelt/28_Toosbystr.png",
     "assets/bilderwelt/29_SuzukiSwift.PNG",
-    "assets/bilderwelt/2_FordKugaMK3.PNG",
     "assets/bilderwelt/30_ZOB.png",
     "assets/bilderwelt/31_M_R.png",
     "assets/bilderwelt/32_Werkstatt2.PNG",
@@ -42,15 +51,6 @@
     "assets/bilderwelt/35a_Spaziergang am sonnigen Hafen 马会.png",
     "assets/bilderwelt/36.1_Lunge.jpg",
     "assets/bilderwelt/36.2_Lunge_links.jpg",
-    "assets/bilderwelt/36.3_.jpg",
-    "assets/bilderwelt/3_Hafen.png",
-    "assets/bilderwelt/4_RenaultTwingo3.PNG",
-    "assets/bilderwelt/5_CarMeet.png",
-    "assets/bilderwelt/6_B_N_A.png",
-    "assets/bilderwelt/7_Grillen Ende.png",
-    "assets/bilderwelt/7a_Selbstbewusster Mann am weißen Ford-SUV.png",
-    "assets/bilderwelt/7b_Selbstbewusste Frau am türkisfarbenen Renault.png",
-    "assets/bilderwelt/8_Exe.png",
-    "assets/bilderwelt/9_Fiat500.png"
+    "assets/bilderwelt/36.3_.jpg"
   ]
 }
